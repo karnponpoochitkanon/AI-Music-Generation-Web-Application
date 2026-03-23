@@ -68,6 +68,32 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+## CRUD Overview
+
+### Create
+
+Use this section to add new records through the Django Admin interface.
+
+![Create](CRUD_admin/Create.png)
+
+### Read
+
+Use this section to view saved records and inspect their details in the system.
+
+![Read](CRUD_admin/Read.png)
+
+### Update
+
+Use this section to edit existing records and keep the data up to date.
+
+![Update](CRUD_admin/Update.png)
+
+### Delete
+
+Use this section to remove records that are no longer needed.
+
+![Delete](CRUD_admin/Delete.png)
+
 ## License
 
 This project is licensed under the MIT License.  
