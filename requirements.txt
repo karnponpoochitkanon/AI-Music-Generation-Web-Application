@@ -1,3 +1,5 @@
 asgiref>=3.8,<4
 Django>=5,<7
+drf-spectacular>=0.29,<1
+djangorestframework>=3.16,<4
 sqlparse>=0.5,<1

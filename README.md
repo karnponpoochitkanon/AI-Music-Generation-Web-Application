@@ -83,7 +83,59 @@ python manage.py runserver
 
 Open:
 
+- `http://127.0.0.1:8000/` redirects to API docs
 - `http://127.0.0.1:8000/admin/`
+
+## Public API
+
+The project now exposes CRUD endpoints outside Django Admin.
+
+Postman-style song endpoints are also available for demo and presentation use.
+The project also includes Django REST Framework docs pages for browser-based API exploration.
+
+- `GET, POST /api/users/`
+- `GET, PUT, DELETE /api/users/<uuid>/`
+- `GET, POST /api/admins/`
+- `GET, PUT, DELETE /api/admins/<uuid>/`
+- `GET, POST /api/songs/`
+- `GET, PUT, DELETE /api/songs/<uuid>/`
+- `GET, POST /api/requests/`
+- `GET, PUT, DELETE /api/requests/<uuid>/`
+- `GET, POST /api/admin-actions/`
+- `GET, PUT, DELETE /api/admin-actions/<uuid>/`
+
+### Postman-style Song Endpoints
+
+- `GET /songs/`
+- `POST /songs/create/`
+- `GET /songs/<uuid>/`
+- `DELETE /songs/<uuid>/delete/`
+- `PATCH /songs/<uuid>/visibility/`
+
+### DRF Docs and Browsable API
+
+- `GET /api/docs/` Swagger UI
+- `GET /api/redoc/` ReDoc
+- `GET /api/schema/` OpenAPI schema
+- `GET /api/drf/` DRF browsable API root
+- `GET, POST /api/drf/songs/`
+- `GET, PUT, PATCH, DELETE /api/drf/songs/<uuid>/`
+
+Example:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@example.com","account_status":"ACTIVE"}'
+```
+
+Song example:
+
+```bash
+curl -X POST http://127.0.0.1:8000/songs/create/ \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Zen Song","owner":"<user_uuid>","audio_url":"https://example.com/song.mp3","visibility":"PRIVATE"}'
+```
 
 ## Development Workflow
 
@@ -101,29 +153,57 @@ python manage.py runserver
 
 ## CRUD Overview
 
-### Create
+### Django Admin CRUD
 
-Use this section to add new records through the Django Admin interface.
+#### Create
 
-![Create](CRUD_admin/Create.png)
+Create records through the Django Admin interface.
 
-### Read
+![Create Admin](CRUD_admin/CreateAdmin.png)
 
-Use this section to view saved records and inspect their details in the system.
+#### Read
 
-![Read](CRUD_admin/Read.png)
+Read and inspect stored records through the Django Admin interface.
 
-### Update
+![Read Admin](CRUD_admin/ReadAdmin.png)
 
-Use this section to edit existing records and keep the data up to date.
+#### Update
 
-![Update](CRUD_admin/Update.png)
+Update existing records through the Django Admin interface.
 
-### Delete
+![Update Admin](CRUD_admin/UpdateAdmin.png)
 
-Use this section to remove records that are no longer needed.
+#### Delete
 
-![Delete](CRUD_admin/Delete.png)
+Delete records through the Django Admin interface.
+
+![Delete Admin](CRUD_admin/DeleteAdmin.png)
+
+### API CRUD
+
+#### Create
+
+Create records through the exposed API endpoints.
+
+![Create API](CRUD_admin/CreateApi.png)
+
+#### Read
+
+Read records through the exposed API endpoints and documentation tools.
+
+![Read API](CRUD_admin/ReadApi.png)
+
+#### Update
+
+Update records through the exposed API endpoints.
+
+![Update API](CRUD_admin/UpdateApi.png)
+
+#### Delete
+
+Delete records through the exposed API endpoints.
+
+![Delete API](CRUD_admin/DeleteApi.png)
 
 ## License
 
