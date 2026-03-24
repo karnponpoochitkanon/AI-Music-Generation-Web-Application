@@ -2,7 +2,7 @@
 
 > A production-minded Django foundation for building the next wave of AI-powered music creation.
 
-![Django](https://img.shields.io/badge/Django-4.2.x-0C4B33?style=for-the-badge&logo=django)
+![Django](https://img.shields.io/badge/Django-5.x%20%7C%206.x-0C4B33?style=for-the-badge&logo=django)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Foundation%20Stage-ffb300?style=for-the-badge)
 
@@ -16,6 +16,7 @@ This project is the backend core of an **AI Music Generation Platform** designed
 - Collaborate and share creations online
 
 Current repository state is an initial Django scaffold, prepared for structured expansion.
+The project supports Django 5.x and 6.x for class use and no longer pins the older 4.2 release.
 
 ## Quick Start
 
@@ -31,6 +32,8 @@ source .venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+This installs a Django version in the supported `5.x` to `6.x` range.
 
 ### 3) Run database migrations
 
