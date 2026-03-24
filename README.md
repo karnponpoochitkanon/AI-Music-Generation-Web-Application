@@ -18,6 +18,34 @@ This project is the backend core of an **AI Music Generation Platform** designed
 Current repository state is an initial Django scaffold, prepared for structured expansion.
 The project supports Django 5.x and 6.x for class use and no longer pins the older 4.2 release.
 
+## Domain Model Diagram
+
+This diagram shows the current domain model used in the project.
+
+![Domain Model Diagram](domain%20model%20diagram/domain%20model%20diagram.png)
+
+## Recent Changes
+
+### 1) Django dependency updated
+
+The repository originally pinned `Django==4.2.29` in `requirements.txt`.
+That was changed to support `Django>=5,<7` because the class uses Django 5.x or 6.x, and the project setup already aligns better with newer Django versions.
+
+### 2) Removed generation status enum
+
+The `Generation` status enum was removed from the model design.
+This was an intentional simplification because that status felt too implementation-specific and not essential to the core domain model.
+
+Instead of storing a dedicated generation status enum, the current model keeps the request structure focused on the actual request data and completion result, such as:
+
+- `song_name`
+- `genre`
+- `mood`
+- `singer_style`
+- `description`
+- `completed_at`
+- `produced_song`
+
 ## Quick Start
 
 ### 1) Create virtual environment
