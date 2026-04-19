@@ -1,4 +1,5 @@
 from .base import GenerationResult, SongGenerationStrategy
+from .factory import get_strategy
 from .mock_strategy import MockSongGenerationStrategy
 from .song_generator import SongGenerator
 from .suno_strategy import SunoApiSongGenerationStrategy
@@ -9,4 +10,5 @@ __all__ = [
     "MockSongGenerationStrategy",
     "SunoApiSongGenerationStrategy",
     "SongGenerator",
+    "get_strategy",
 ]

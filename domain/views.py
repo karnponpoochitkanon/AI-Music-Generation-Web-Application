@@ -1,6 +1,5 @@
 import json
 
-from django.conf import settings
 from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -13,15 +12,8 @@ from .forms import (
     UserForm,
 )
 from .models import Admin, AdminAction, MusicGenerationRequest, Song, User
-from .services.generation import MockSongGenerationStrategy, SunoApiSongGenerationStrategy
+from .services.generation import get_strategy
 from .services.song_generation_service import SongGenerationService
-
-
-def _get_generation_strategy():
-    strategy_name = getattr(settings, "SONG_GENERATION_STRATEGY", "mock")
-    if strategy_name == "suno":
-        return SunoApiSongGenerationStrategy()
-    return MockSongGenerationStrategy()
 
 
 def index(request):
@@ -364,7 +356,7 @@ def generate_song(request, pk):
             status=409,
         )
 
-    service = SongGenerationService(_get_generation_strategy())
+    service = SongGenerationService(get_strategy())
     try:
         song = service.execute(generation_request)
     except Exception as exc:
