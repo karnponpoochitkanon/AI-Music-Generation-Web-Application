@@ -58,15 +58,33 @@
 
 /* ── Waveform ── */
 .waveform {
+  position: relative;
   display: flex; align-items: center; gap: 3px;
   height: 38px; margin: 14px 0; padding: 2px;
+  overflow: hidden;
+}
+.waveform::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--progress, 0%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(232,109,32,.16), rgba(132,104,212,.14));
+  pointer-events: none;
+  transition: width .1s linear;
 }
 .bar {
   flex: 1; border-radius: 4px;
   background: linear-gradient(180deg, var(--orange-strong), var(--lavender-strong));
   animation: wave var(--d,.8s) ease-in-out infinite alternate;
   animation-delay: var(--delay,0s);
+  animation-play-state: paused;
   opacity: .8;
+  transform-origin: center;
+  z-index: 1;
+}
+.waveformPlaying .bar {
+  animation-play-state: running;
 }
 @keyframes wave { from{height:4px} to{height:var(--h,24px)} }
 

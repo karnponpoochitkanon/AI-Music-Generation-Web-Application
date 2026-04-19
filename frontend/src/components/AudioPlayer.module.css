@@ -36,27 +36,54 @@
 .trackLabel { font-size: .8rem; font-weight: 700; color: var(--text-2); }
 .time { font-size: .72rem; font-family: "Fira Code", monospace; color: var(--text-muted); }
 
-.seekBar { cursor: pointer; padding: 6px 0; }
-.seekTrack {
-  position: relative; height: 6px;
-  background: rgba(255,255,255,.65);
-  border: 1.5px solid rgba(100,60,20,.12);
+.seekRange {
+  width: 100%;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: transparent;
+}
+.seekRange:disabled { cursor: default; opacity: .65; }
+.seekRange::-webkit-slider-runnable-track {
+  height: 7px;
   border-radius: 999px;
+  border: 1.5px solid rgba(100,60,20,.12);
+  background:
+    linear-gradient(90deg, var(--orange-strong), var(--lavender-strong)) 0 / var(--progress, 0%) 100% no-repeat,
+    rgba(255,255,255,.68);
   box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
 }
-.seekFill {
-  position: absolute; left: 0; top: 0; bottom: 0;
-  background: linear-gradient(90deg, var(--orange-strong), var(--lavender-strong));
-  border-radius: 999px;
-  transition: width .1s linear;
-}
-.seekThumb {
-  position: absolute; top: 50%; transform: translate(-50%,-50%);
-  width: 14px; height: 14px; border-radius: 50%;
+.seekRange::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5.5px;
+  border-radius: 50%;
   background: #fff;
-  border: 2.5px solid var(--orange-strong);
+  border: 3px solid var(--orange-strong);
   box-shadow: var(--shadow-sm);
-  transition: left .1s linear;
+}
+.seekRange::-moz-range-track {
+  height: 7px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(100,60,20,.12);
+  background: rgba(255,255,255,.68);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
+}
+.seekRange::-moz-range-progress {
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orange-strong), var(--lavender-strong));
+}
+.seekRange::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--orange-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .badge {

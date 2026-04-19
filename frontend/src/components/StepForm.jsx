@@ -5,6 +5,8 @@ import styles from './StepForm.module.css'
 const GENRES = ['lo-fi','jazz','electronic','pop','classical','hip-hop','rock','ambient']
 const MOODS  = ['chill','energetic','melancholy','happy','dark','romantic','epic']
 
+const uniqueEmail = () => `demo+${Date.now()}@example.com`
+
 function StepIndicator({ step }) {
   const labels = ['Create user', 'Fill request', 'Generate song']
   return (
@@ -30,7 +32,7 @@ export default function StepForm({
   requestId, setRequestId,
   addLog, setResult, onReset,
 }) {
-  const [email, setEmail]           = useState('demo@example.com')
+  const [email, setEmail]           = useState(uniqueEmail)
   const [songName, setSongName]     = useState('Midnight Dreams')
   const [genre, setGenre]           = useState('lo-fi')
   const [mood, setMood]             = useState('chill')
@@ -94,7 +96,7 @@ export default function StepForm({
   }
 
   function handleReset() {
-    setEmail('demo@example.com')
+    setEmail(uniqueEmail())
     setSongName('Midnight Dreams')
     setGenre('lo-fi'); setMood('chill')
     setSingerStyle(''); setDescription('')

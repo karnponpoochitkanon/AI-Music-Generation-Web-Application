@@ -66,7 +66,7 @@ function buildMockAudioBuffer(ctx) {
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function AudioPlayer({ audioUrl, strategy }) {
+export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
   const ctxRef     = useRef(null)
   const srcRef     = useRef(null)
   const startRef   = useRef(0)
@@ -80,6 +80,10 @@ export default function AudioPlayer({ audioUrl, strategy }) {
 
   const isMock = strategy === 'mock' || !audioUrl || audioUrl.startsWith('/static/')
 
+  useEffect(() => {
+    onPlaybackChange?.({ isPlaying: playing, progress })
+  }, [onPlaybackChange, playing, progress])
+
   // ── cleanup on unmount ──
   useEffect(() => () => {
     cancelAnimationFrame(rafRef.current)
@@ -91,9 +95,14 @@ export default function AudioPlayer({ audioUrl, strategy }) {
   useEffect(() => {
     function tick() {
       if (!ctxRef.current || !playing) return
+      const totalDuration = duration || bufRef.current?.duration || 0
+      if (!totalDuration) {
+        rafRef.current = requestAnimationFrame(tick)
+        return
+      }
       const elapsed = ctxRef.current.currentTime - startRef.current + offsetRef.current
-      setProgress(Math.min(elapsed / duration, 1))
-      if (elapsed < duration) rafRef.current = requestAnimationFrame(tick)
+      setProgress(Math.min(elapsed / totalDuration, 1))
+      if (elapsed < totalDuration) rafRef.current = requestAnimationFrame(tick)
       else { setPlaying(false); setProgress(0); offsetRef.current = 0 }
     }
 
@@ -140,17 +149,31 @@ export default function AudioPlayer({ audioUrl, strategy }) {
     setPlaying(true)
   }
 
-  function seek(e) {
+  function seekToRatio(ratio) {
     if (!isMock || !bufRef.current) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-    offsetRef.current = ratio * bufRef.current.duration
-    setProgress(ratio)
+    const nextProgress = Math.max(0, Math.min(1, ratio))
+    offsetRef.current = nextProgress * bufRef.current.duration
+    setProgress(nextProgress)
     if (playing) {
+      const ctx = ctxRef.current
+      if (srcRef.current) srcRef.current.onended = null
       srcRef.current?.stop()
-      setPlaying(false)
-      setTimeout(() => togglePlay(), 50)
+      const src = ctx.createBufferSource()
+      src.buffer = bufRef.current
+      src.connect(ctx.destination)
+      src.start(0, offsetRef.current)
+      src.onended = () => {
+        if (offsetRef.current + (ctx.currentTime - startRef.current) >= bufRef.current.duration - 0.05) {
+          setPlaying(false); setProgress(0); offsetRef.current = 0
+        }
+      }
+      srcRef.current = src
+      startRef.current = ctx.currentTime
     }
+  }
+
+  function seek(e) {
+    seekToRatio(Number(e.currentTarget.value) / 1000)
   }
 
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
@@ -172,19 +195,43 @@ export default function AudioPlayer({ audioUrl, strategy }) {
                 {duration > 0 ? `${fmt(progress * duration)} / ${fmt(duration)}` : '—'}
               </span>
             </div>
-            <div className={styles.seekBar} onClick={seek}>
-              <div className={styles.seekTrack}>
-                <div className={styles.seekFill} style={{ width: `${progress * 100}%` }} />
-                <div className={styles.seekThumb} style={{ left: `${progress * 100}%` }} />
-              </div>
-            </div>
+            <input
+              className={styles.seekRange}
+              type="range"
+              min="0"
+              max="1000"
+              value={Math.round(progress * 1000)}
+              onChange={seek}
+              onInput={seek}
+              disabled={duration <= 0}
+              aria-label="Seek audio"
+              style={{ '--progress': `${progress * 100}%` }}
+            />
           </div>
           <span className={styles.badge}>WEB AUDIO</span>
         </>
       ) : (
         // ── Suno: real audio URL ──
         <div className={styles.realAudio}>
-          <audio controls src={audioUrl} className={styles.audioEl} />
+          <audio
+            controls
+            src={audioUrl}
+            className={styles.audioEl}
+            onPlay={() => onPlaybackChange?.({ isPlaying: true, progress })}
+            onPause={e => onPlaybackChange?.({
+              isPlaying: false,
+              progress: e.currentTarget.duration
+                ? e.currentTarget.currentTime / e.currentTarget.duration
+                : progress,
+            })}
+            onEnded={() => onPlaybackChange?.({ isPlaying: false, progress: 0 })}
+            onTimeUpdate={e => onPlaybackChange?.({
+              isPlaying: !e.currentTarget.paused,
+              progress: e.currentTarget.duration
+                ? e.currentTarget.currentTime / e.currentTarget.duration
+                : 0,
+            })}
+          />
           <span className={`${styles.badge} ${styles.sunoBadge}`}>
             SUNO
           </span>

@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import styles from './ResultPanel.module.css'
 import AudioPlayer from './AudioPlayer'
 
-function Waveform() {
+function Waveform({ isPlaying, progress }) {
   const bars = useMemo(() => (
     Array.from({ length: 44 }, (_, i) => ({
       h: 8 + ((i * 17) % 25),
@@ -12,12 +12,15 @@ function Waveform() {
   ), [])
 
   return (
-    <div className={styles.waveform}>
+    <div
+      className={`${styles.waveform} ${isPlaying ? styles.waveformPlaying : ''}`}
+      style={{ '--progress': `${Math.max(0, Math.min(1, progress)) * 100}%` }}
+    >
       {bars.map((b, i) => (
         <div
           key={i}
           className={styles.bar}
-          style={{ '--h': `${b.h}px`, '--d': `${b.d}s`, '--delay': `${b.delay}s` }}
+          style={{ '--h': `${b.h}px`, '--d': `${b.d}s`, '--delay': `${b.delay}s`, '--i': i }}
         />
       ))}
     </div>
@@ -64,6 +67,8 @@ function JsonLine({ obj, depth = 0 }) {
 }
 
 export default function ResultPanel({ result }) {
+  const [playback, setPlayback] = useState({ isPlaying: false, progress: 0 })
+
   if (!result) {
     return (
       <div className={styles.card}>
@@ -98,9 +103,13 @@ export default function ResultPanel({ result }) {
           </span>
         </div>
 
-        <Waveform />
+        <Waveform isPlaying={playback.isPlaying} progress={playback.progress} />
 
-        <AudioPlayer audioUrl={song.audio_url} strategy={strategy} />
+        <AudioPlayer
+          audioUrl={song.audio_url}
+          strategy={strategy}
+          onPlaybackChange={setPlayback}
+        />
 
         <div className={styles.fields}>
           <Field label="Status"        value="SUCCESS"       accent="green" />
