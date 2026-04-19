@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: var(--sky);
-  border: 2px solid var(--border);
+  background: linear-gradient(135deg, var(--sky), var(--surface2));
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px 18px;
   margin: 14px 0;
@@ -14,14 +14,14 @@
   width: 42px; height: 42px;
   border-radius: 50%;
   background: var(--peach);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   cursor: pointer; color: var(--ink);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: transform .15s, box-shadow .15s;
-  box-shadow: 3px 3px 0 var(--ink);
+  box-shadow: var(--shadow-soft);
 }
-.playBtn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+.playBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 .playBtn:active { transform: scale(.96); }
 
 /* ── Controls ── */
@@ -40,12 +40,12 @@
   position: relative;
   height: 6px;
   background: rgba(255,255,255,.65);
-  border: 1px solid rgba(39,35,58,.22);
+  border: 1px solid rgba(66,55,68,.16);
   border-radius: 999px;
 }
 .seekFill {
   position: absolute; left: 0; top: 0; bottom: 0;
-  background: linear-gradient(90deg, var(--peach-strong), var(--mint-strong));
+  background: linear-gradient(90deg, var(--peach-strong), var(--lavender-strong));
   border-radius: 999px;
   transition: width .1s linear;
 }
@@ -54,7 +54,7 @@
   width: 12px; height: 12px;
   border-radius: 50%;
   background: var(--ink);
-  box-shadow: none;
+  box-shadow: 0 2px 8px rgba(66, 55, 68, .18);
   transition: left .1s linear;
 }
 
@@ -63,7 +63,7 @@
   font-size: .68rem; font-weight: 700; letter-spacing: .05em;
   padding: 4px 9px; border-radius: 6px;
   background: var(--mint);
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   color: var(--ink);
   flex-shrink: 0;
   white-space: nowrap;

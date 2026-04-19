@@ -3,26 +3,27 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #fff8ee;
+  --bg:           #fff9f6;
   --surface:      #ffffff;
-  --surface2:     #f5fbff;
-  --border:       #27233a;
-  --border-soft:  #e6dccb;
-  --ink:          #27233a;
-  --text:         #27233a;
-  --text-muted:   #736f82;
-  --mint:         #b8f3d3;
-  --mint-strong:  #1f9f69;
-  --sky:          #b9dcff;
-  --sky-strong:   #2d73bf;
-  --peach:        #ffd3bf;
-  --peach-strong: #d95d39;
-  --lavender:     #d8c8ff;
-  --lavender-strong: #6a4ecf;
-  --lemon:        #fff1a8;
-  --red:          #df3f5f;
-  --shadow:       8px 8px 0 #27233a;
-  --shadow-soft:  0 18px 44px rgba(39, 35, 58, .12);
+  --surface2:     #fff4f8;
+  --border:       #eadce4;
+  --border-soft:  #f3e9ee;
+  --ink:          #423744;
+  --text:         #423744;
+  --text-muted:   #8d7f8b;
+  --mint:         #dff8ea;
+  --mint-strong:  #3f9c70;
+  --sky:          #e4f2ff;
+  --sky-strong:   #4d85b8;
+  --peach:        #ffe1d6;
+  --peach-strong: #d77b62;
+  --lavender:     #eee8ff;
+  --lavender-strong: #806bd3;
+  --lemon:        #fff6cc;
+  --pink:         #ffddea;
+  --red:          #d65a73;
+  --shadow:       0 16px 36px rgba(115, 92, 103, .12);
+  --shadow-soft:  0 10px 26px rgba(115, 92, 103, .1);
   --radius:       8px;
   font-size: 16px;
 }
@@ -38,4 +39,4 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #f0c4b2; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #efcbd8; border-radius: 3px; }
