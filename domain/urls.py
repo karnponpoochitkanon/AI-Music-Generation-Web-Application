@@ -55,4 +55,9 @@ urlpatterns = [
         views.admin_action_detail,
         name="admin_action_detail",
     ),
+    path(
+        "api/requests/<uuid:pk>/generate/",
+        views.generate_song,
+        name="generate_song",
+    ),
 ]

@@ -1,0 +1,14 @@
+from .base import GenerationResult, SongGenerationStrategy
+
+
+class SongGenerator:
+    """Context — holds a strategy and delegates generation to it."""
+
+    def __init__(self, strategy: SongGenerationStrategy):
+        self._strategy = strategy
+
+    def set_strategy(self, strategy: SongGenerationStrategy) -> None:
+        self._strategy = strategy
+
+    def generate(self, request) -> GenerationResult:
+        return self._strategy.generate(request)

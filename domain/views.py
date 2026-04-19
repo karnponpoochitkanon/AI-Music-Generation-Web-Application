@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +13,15 @@ from .forms import (
     UserForm,
 )
 from .models import Admin, AdminAction, MusicGenerationRequest, Song, User
+from .services.generation import MockSongGenerationStrategy, SunoApiSongGenerationStrategy
+from .services.song_generation_service import SongGenerationService
+
+
+def _get_generation_strategy():
+    strategy_name = getattr(settings, "SONG_GENERATION_STRATEGY", "mock")
+    if strategy_name == "suno":
+        return SunoApiSongGenerationStrategy()
+    return MockSongGenerationStrategy()
 
 
 def index(request):
@@ -333,3 +343,38 @@ def admin_actions_collection(request):
 @csrf_exempt
 def admin_action_detail(request, pk):
     return _resource_detail(request, "admin-actions", pk)
+
+
+@csrf_exempt
+def generate_song(request, pk):
+    """
+    POST /api/requests/<uuid:pk>/generate/
+
+    Runs the configured generation strategy against the given MusicGenerationRequest
+    and returns the newly created Song.
+    """
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    generation_request = get_object_or_404(MusicGenerationRequest, request_id=pk)
+
+    if generation_request.produced_song_id is not None:
+        return JsonResponse(
+            {"error": "This request has already been fulfilled."},
+            status=409,
+        )
+
+    service = SongGenerationService(_get_generation_strategy())
+    try:
+        song = service.execute(generation_request)
+    except Exception as exc:
+        return JsonResponse({"error": str(exc)}, status=502)
+
+    return JsonResponse(
+        {
+            "message": "Song generated successfully.",
+            "song": _serialize_song(song),
+            "request_id": str(generation_request.request_id),
+        },
+        status=201,
+    )

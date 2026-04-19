@@ -133,3 +133,9 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Django REST Framework endpoints for the AI Music Generation project.",
     "VERSION": "1.0.0",
 }
+
+# Song generation strategies
+# Set SONG_GENERATION_STRATEGY to "suno" in production; defaults to "mock"
+SONG_GENERATION_STRATEGY = "mock"
+SUNO_API_KEY = ""
+SUNO_API_URL = "https://api.sunoapi.org"
