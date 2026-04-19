@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import styles from './AudioPlayer.module.css'
 
 // ── Synthesise a short lo-fi demo melody via Web Audio API ──────────────────
@@ -88,18 +88,18 @@ export default function AudioPlayer({ audioUrl, strategy }) {
   }, [])
 
   // ── tick progress ──
-  const tick = useCallback(() => {
-    if (!ctxRef.current || !playing) return
-    const elapsed = ctxRef.current.currentTime - startRef.current + offsetRef.current
-    setProgress(Math.min(elapsed / duration, 1))
-    if (elapsed < duration) rafRef.current = requestAnimationFrame(tick)
-    else { setPlaying(false); setProgress(0); offsetRef.current = 0 }
-  }, [playing, duration])
-
   useEffect(() => {
+    function tick() {
+      if (!ctxRef.current || !playing) return
+      const elapsed = ctxRef.current.currentTime - startRef.current + offsetRef.current
+      setProgress(Math.min(elapsed / duration, 1))
+      if (elapsed < duration) rafRef.current = requestAnimationFrame(tick)
+      else { setPlaying(false); setProgress(0); offsetRef.current = 0 }
+    }
+
     if (playing) rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [playing, tick])
+  }, [playing, duration])
 
   // ── play / pause ──
   async function togglePlay() {
@@ -185,7 +185,7 @@ export default function AudioPlayer({ audioUrl, strategy }) {
         // ── Suno: real audio URL ──
         <div className={styles.realAudio}>
           <audio controls src={audioUrl} className={styles.audioEl} />
-          <span className={styles.badge} style={{ background: 'rgba(124,77,255,.15)', borderColor: 'rgba(124,77,255,.4)', color: '#a87dff' }}>
+          <span className={`${styles.badge} ${styles.sunoBadge}`}>
             SUNO
           </span>
         </div>

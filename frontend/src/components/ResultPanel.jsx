@@ -5,8 +5,8 @@ import AudioPlayer from './AudioPlayer'
 function Waveform() {
   const bars = useMemo(() => (
     Array.from({ length: 44 }, (_, i) => ({
-      h: 6 + Math.random() * 26,
-      d: (0.6 + Math.random() * 0.8).toFixed(2),
+      h: 8 + ((i * 17) % 25),
+      d: (0.72 + ((i * 7) % 9) * 0.05).toFixed(2),
       delay: (i * 0.04).toFixed(2),
     }))
   ), [])

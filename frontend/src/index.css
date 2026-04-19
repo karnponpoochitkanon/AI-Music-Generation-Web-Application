@@ -1,27 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #080812;
-  --surface:      #0e0e20;
-  --surface2:     #13132a;
-  --border:       rgba(120,80,255,.18);
-  --border-glow:  rgba(120,80,255,.45);
-  --purple:       #7c4dff;
-  --purple-light: #a87dff;
-  --blue:         #448aff;
-  --green:        #00e676;
-  --yellow:       #ffd740;
-  --red:          #ff5252;
-  --text:         #e8e8f4;
-  --text-muted:   #7070a0;
-  --radius:       14px;
+  --bg:           #fff8ee;
+  --surface:      #ffffff;
+  --surface2:     #f5fbff;
+  --border:       #27233a;
+  --border-soft:  #e6dccb;
+  --ink:          #27233a;
+  --text:         #27233a;
+  --text-muted:   #736f82;
+  --mint:         #b8f3d3;
+  --mint-strong:  #1f9f69;
+  --sky:          #b9dcff;
+  --sky-strong:   #2d73bf;
+  --peach:        #ffd3bf;
+  --peach-strong: #d95d39;
+  --lavender:     #d8c8ff;
+  --lavender-strong: #6a4ecf;
+  --lemon:        #fff1a8;
+  --red:          #df3f5f;
+  --shadow:       8px 8px 0 #27233a;
+  --shadow-soft:  0 18px 44px rgba(39, 35, 58, .12);
+  --radius:       8px;
   font-size: 16px;
 }
 
 body {
-  font-family: "Inter", "Segoe UI", sans-serif;
+  font-family: "Nunito", "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -31,4 +38,4 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(120,80,255,.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #f0c4b2; border-radius: 3px; }
