@@ -10,10 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env (ignored by git)
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -134,8 +140,7 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
-# Song generation strategies
-# Set SONG_GENERATION_STRATEGY to "suno" in production; defaults to "mock"
-SONG_GENERATION_STRATEGY = "mock"
-SUNO_API_KEY = ""
-SUNO_API_URL = "https://api.sunoapi.org"
+# Song generation strategies — values come from .env (never hardcode secrets here)
+SONG_GENERATION_STRATEGY = os.environ.get("SONG_GENERATION_STRATEGY", "mock")
+SUNO_API_KEY = os.environ.get("SUNO_API_KEY", "")
+SUNO_API_URL = os.environ.get("SUNO_API_URL", "https://api.sunoapi.org")

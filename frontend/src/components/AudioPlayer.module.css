@@ -1,0 +1,79 @@
+.player {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(124,77,255,.2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+
+/* ── Play button ── */
+.playBtn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c4dff, #448aff);
+  border: none; cursor: pointer; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 0 18px rgba(124,77,255,.45);
+}
+.playBtn:hover { transform: scale(1.08); box-shadow: 0 0 26px rgba(124,77,255,.6); }
+.playBtn:active { transform: scale(.96); }
+
+/* ── Controls ── */
+.controls { flex: 1; min-width: 0; }
+
+.trackInfo {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 8px;
+}
+.trackLabel { font-size: .78rem; color: var(--text-muted); }
+.time { font-size: .72rem; font-family: "Fira Code", monospace; color: #555580; }
+
+/* ── Seek bar ── */
+.seekBar { cursor: pointer; padding: 6px 0; }
+.seekTrack {
+  position: relative;
+  height: 4px;
+  background: rgba(255,255,255,.08);
+  border-radius: 2px;
+}
+.seekFill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, #7c4dff, #448aff);
+  border-radius: 2px;
+  transition: width .1s linear;
+}
+.seekThumb {
+  position: absolute; top: 50%; transform: translate(-50%,-50%);
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #a87dff;
+  box-shadow: 0 0 8px rgba(124,77,255,.6);
+  transition: left .1s linear;
+}
+
+/* ── Badge ── */
+.badge {
+  font-size: .68rem; font-weight: 700; letter-spacing: .05em;
+  padding: 4px 9px; border-radius: 6px;
+  background: rgba(0,230,118,.1);
+  border: 1px solid rgba(0,230,118,.25);
+  color: #00e676;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── Real audio (Suno) ── */
+.realAudio {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+}
+.audioEl {
+  flex: 1;
+  height: 36px;
+  accent-color: #7c4dff;
+  border-radius: 8px;
+}

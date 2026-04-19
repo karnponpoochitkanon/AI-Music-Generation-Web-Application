@@ -1,6 +1,8 @@
 import json
 
+from django.conf import settings
 from django.http import HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -18,6 +20,11 @@ from .services.song_generation_service import SongGenerationService
 
 def index(request):
     return redirect("swagger-ui")
+
+
+def demo(request):
+    active_strategy = getattr(settings, "SONG_GENERATION_STRATEGY", "mock")
+    return render(request, "demo.html", {"active_strategy": active_strategy})
 
 
 def _parse_json_body(request):
@@ -358,7 +365,7 @@ def generate_song(request, pk):
 
     service = SongGenerationService(get_strategy())
     try:
-        song = service.execute(generation_request)
+        song, result = service.execute(generation_request)
     except Exception as exc:
         return JsonResponse({"error": str(exc)}, status=502)
 
@@ -367,6 +374,9 @@ def generate_song(request, pk):
             "message": "Song generated successfully.",
             "song": _serialize_song(song),
             "request_id": str(generation_request.request_id),
+            "generation_id": result.generation_id,
+            "strategy": result.metadata.get("strategy", "unknown"),
+            "metadata": result.metadata,
         },
         status=201,
     )

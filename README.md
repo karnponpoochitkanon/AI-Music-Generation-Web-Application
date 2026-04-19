@@ -205,6 +205,108 @@ Delete records through the exposed API endpoints.
 
 ![Delete API](CRUD_admin/DeleteApi.png)
 
+## Exercise 4 — Strategy Pattern for Song Generation
+
+The project implements the **Strategy Pattern** to swap between two song-generation backends
+without changing any other code.
+
+### Strategy files
+
+| File | Role |
+|---|---|
+| `domain/services/generation/base.py` | Abstract interface (`SongGenerationStrategy`) and `GenerationResult` dataclass |
+| `domain/services/generation/mock_strategy.py` | Mock strategy — deterministic, no network required |
+| `domain/services/generation/suno_strategy.py` | Suno API strategy — calls sunoapi.org |
+| `domain/services/generation/factory.py` | Centralised selection — reads `SONG_GENERATION_STRATEGY` from environment |
+| `domain/services/song_generation_service.py` | Orchestrates strategy + DB writes |
+
+### Setting the API key (never commit secrets)
+
+1. Copy the example env file:
+
+```bash
+cp .env.example .env
+```
+
+2. Open `.env` and fill in your Suno API key:
+
+```
+SUNO_API_KEY=your-suno-api-key-here
+```
+
+`.env` is listed in `.gitignore` and will never be committed to the repository.
+
+---
+
+### Run in Mock mode (default — no API key needed)
+
+```bash
+# .env
+SONG_GENERATION_STRATEGY=mock
+```
+
+```bash
+python manage.py runserver
+```
+
+Trigger generation with any existing `MusicGenerationRequest` UUID:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/requests/<request-uuid>/generate/
+```
+
+Expected response:
+
+```json
+{
+  "message": "Song generated successfully.",
+  "song": {
+    "song_id": "...",
+    "title": "My Song",
+    "audio_url": "/static/audio/mock_placeholder.mp3",
+    ...
+  },
+  "request_id": "..."
+}
+```
+
+---
+
+### Run in Suno mode (requires API key)
+
+```bash
+# .env
+SONG_GENERATION_STRATEGY=suno
+SUNO_API_KEY=your-suno-api-key-here
+```
+
+```bash
+python manage.py runserver
+```
+
+Trigger generation:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/requests/<request-uuid>/generate/
+```
+
+The strategy will:
+1. `POST /api/v1/generate` → receive a `taskId`
+2. Poll `GET /api/v1/generate/record-info?taskId=…` until status is `SUCCESS`
+3. Save the returned `audio_url` as a new `Song` in the database
+
+---
+
+### Generation endpoint
+
+`POST /api/requests/<uuid>/generate/`
+
+| Status | Meaning |
+|---|---|
+| `201` | Song created successfully |
+| `409` | Request already fulfilled |
+| `502` | Suno API error or timeout |
+
 ## License
 
 This project is licensed under the MIT License.  

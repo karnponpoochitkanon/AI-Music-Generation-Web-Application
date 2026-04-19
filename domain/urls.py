@@ -19,6 +19,7 @@ router.register("admin-actions", AdminActionViewSet, basename="drf-admin-actions
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("demo/", views.demo, name="demo"),
     path("api/drf/", include(router.urls)),
     path("songs/", views.songs_list, name="songs_list"),
     path("songs/create/", views.create_song, name="create_song"),

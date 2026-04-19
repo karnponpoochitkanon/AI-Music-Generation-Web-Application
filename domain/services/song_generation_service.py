@@ -14,7 +14,8 @@ class SongGenerationService:
     def set_strategy(self, strategy: SongGenerationStrategy) -> None:
         self._generator.set_strategy(strategy)
 
-    def execute(self, request: MusicGenerationRequest) -> Song:
+    def execute(self, request: MusicGenerationRequest) -> tuple:
+        """Returns (Song, GenerationResult) so callers can access generation metadata."""
         result = self._generator.generate(request)
 
         song = Song.objects.create(
@@ -27,4 +28,4 @@ class SongGenerationService:
         request.completed_at = timezone.now()
         request.save(update_fields=["produced_song", "completed_at"])
 
-        return song
+        return song, result
