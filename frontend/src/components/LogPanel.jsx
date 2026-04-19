@@ -18,7 +18,10 @@ export default function LogPanel({ logs, onClear }) {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <span className={styles.title}>⬡ API Log</span>
+        <span className={styles.title}>
+          <span className={styles.titleDot} />
+          API Log
+        </span>
         <button className={styles.clear} onClick={onClear}>Clear</button>
       </div>
       <div className={styles.body} ref={ref}>

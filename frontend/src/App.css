@@ -1,20 +1,19 @@
 .app-bg {
   position: relative;
   min-height: 100vh;
-  overflow-x: hidden;
   background:
-    radial-gradient(circle at 15% 12%, rgba(255, 221, 234, .8) 0 120px, transparent 121px),
-    radial-gradient(circle at 84% 8%, rgba(228, 242, 255, .85) 0 150px, transparent 151px),
-    linear-gradient(135deg, #fff9f6 0%, #fff5fa 48%, #f4fbff 100%);
+    radial-gradient(circle at 10% 0%,   rgba(255,180,100,.50) 0 140px, transparent 141px),
+    radial-gradient(circle at 90% 5%,   rgba(208,194,255,.45) 0 160px, transparent 161px),
+    radial-gradient(circle at 50% 98%,  rgba(168,232,200,.40) 0 180px, transparent 181px),
+    linear-gradient(160deg, #fdf8f2 0%, #fdf4ec 45%, #f5f8ff 100%);
 }
 
 .app-bg::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(141, 127, 139, .16) 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: .36;
+  background-image: radial-gradient(rgba(160,100,50,.11) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
   pointer-events: none;
   z-index: 0;
 }
@@ -24,7 +23,7 @@
   z-index: 1;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 24px 24px 72px;
+  padding: 24px 28px 80px;
 }
 
 .grid {
@@ -38,9 +37,12 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  position: sticky;
+  top: 24px;
 }
 
-@media (max-width: 860px) {
-  .page { padding: 18px 14px 48px; }
+@media (max-width: 900px) {
   .grid { grid-template-columns: 1fr; }
+  .right-col { position: static; }
+  .page { padding: 18px 16px 56px; }
 }

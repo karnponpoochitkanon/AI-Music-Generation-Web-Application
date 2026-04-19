@@ -2,84 +2,82 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(135deg, var(--sky), var(--surface2));
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--orange), var(--lemon));
+  border: 1.5px solid var(--orange-mid);
+  border-radius: var(--radius-lg);
   padding: 14px 18px;
   margin: 14px 0;
+  box-shadow: var(--shadow-xs);
 }
 
-/* ── Play button ── */
 .playBtn {
-  width: 42px; height: 42px;
+  width: 44px; height: 44px;
   border-radius: 50%;
-  background: var(--peach);
-  border: 1px solid var(--border);
-  cursor: pointer; color: var(--ink);
+  background: linear-gradient(145deg, var(--orange-strong), var(--orange-deep));
+  border: 2px solid rgba(255,255,255,.6);
+  cursor: pointer; color: #fff;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  transition: transform .15s, box-shadow .15s;
-  box-shadow: var(--shadow-soft);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s;
+  box-shadow: var(--shadow-sm), 0 0 0 0 rgba(232,109,32,0);
 }
-.playBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-.playBtn:active { transform: scale(.96); }
+.playBtn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow), 0 0 0 5px rgba(232,109,32,.2);
+}
+.playBtn:active { transform: scale(.95); }
 
-/* ── Controls ── */
 .controls { flex: 1; min-width: 0; }
 
 .trackInfo {
   display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 }
-.trackLabel { font-size: .78rem; color: var(--text-muted); }
-.time { font-size: .72rem; font-family: "Fira Code", monospace; color: #5d6678; }
+.trackLabel { font-size: .8rem; font-weight: 700; color: var(--text-2); }
+.time { font-size: .72rem; font-family: "Fira Code", monospace; color: var(--text-muted); }
 
-/* ── Seek bar ── */
 .seekBar { cursor: pointer; padding: 6px 0; }
 .seekTrack {
-  position: relative;
-  height: 6px;
+  position: relative; height: 6px;
   background: rgba(255,255,255,.65);
-  border: 1px solid rgba(66,55,68,.16);
+  border: 1.5px solid rgba(100,60,20,.12);
   border-radius: 999px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
 }
 .seekFill {
   position: absolute; left: 0; top: 0; bottom: 0;
-  background: linear-gradient(90deg, var(--peach-strong), var(--lavender-strong));
+  background: linear-gradient(90deg, var(--orange-strong), var(--lavender-strong));
   border-radius: 999px;
   transition: width .1s linear;
 }
 .seekThumb {
   position: absolute; top: 50%; transform: translate(-50%,-50%);
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--ink);
-  box-shadow: 0 2px 8px rgba(66, 55, 68, .18);
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--orange-strong);
+  box-shadow: var(--shadow-sm);
   transition: left .1s linear;
 }
 
-/* ── Badge ── */
 .badge {
-  font-size: .68rem; font-weight: 700; letter-spacing: .05em;
-  padding: 4px 9px; border-radius: 6px;
-  background: var(--mint);
-  border: 1px solid var(--border);
-  color: var(--ink);
-  flex-shrink: 0;
-  white-space: nowrap;
+  font-size: .68rem; font-weight: 900; letter-spacing: .05em;
+  padding: 5px 10px; border-radius: 999px;
+  background: rgba(255,255,255,.75);
+  border: 1.5px solid var(--orange-mid);
+  color: var(--orange-deep);
+  flex-shrink: 0; white-space: nowrap;
 }
-
 .sunoBadge {
   background: var(--lavender);
+  border-color: var(--lavender-mid);
+  color: var(--lavender-strong);
 }
 
-/* ── Real audio (Suno) ── */
 .realAudio {
   display: flex; align-items: center; gap: 14px; width: 100%;
 }
 .audioEl {
-  flex: 1;
-  height: 36px;
-  accent-color: var(--peach-strong);
+  flex: 1; height: 36px;
+  accent-color: var(--orange-strong);
   border-radius: 8px;
 }
