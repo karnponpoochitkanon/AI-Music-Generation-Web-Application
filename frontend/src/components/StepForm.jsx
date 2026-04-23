@@ -1,14 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import styles from './StepForm.module.css'
 
 const GENRES = ['lo-fi','jazz','electronic','pop','classical','hip-hop','rock','ambient']
 const MOODS  = ['chill','energetic','melancholy','happy','dark','romantic','epic']
 
-const uniqueEmail = () => `demo+${Date.now()}@example.com`
-
 function StepIndicator({ step }) {
-  const labels = ['Create user', 'Fill request', 'Generate song']
+  const labels = ['Fill request', 'Generate song']
   return (
     <div className={styles.steps}>
       {labels.map((label, i) => {
@@ -28,47 +26,109 @@ function StepIndicator({ step }) {
 }
 
 export default function StepForm({
-  step, setStep, userId, setUserId,
+  step, setStep, userId,
   requestId, setRequestId,
+  authUser,
   addLog, setResult, onReset,
+  generationState, setGenerationState,
+  onNotify,
 }) {
-  const [email, setEmail]           = useState(uniqueEmail)
+  const email = authUser?.email ?? ''
+  const activeUserId = userId || authUser?.userId || null
   const [songName, setSongName]     = useState('Midnight Dreams')
   const [genre, setGenre]           = useState('lo-fi')
   const [mood, setMood]             = useState('chill')
   const [singerStyle, setSingerStyle] = useState('')
   const [description, setDescription] = useState('')
-  const [loadingUser, setLoadingUser]   = useState(false)
   const [loadingReq, setLoadingReq]     = useState(false)
   const [loadingGen, setLoadingGen]     = useState(false)
-  const [userDone, setUserDone]   = useState(false)
   const [reqDone, setReqDone]     = useState(false)
   const [genDone, setGenDone]     = useState(false)
+  const pollRef = useRef(null)
 
-  async function createUser() {
-    setLoadingUser(true)
-    addLog('req', `→ POST /api/users/  { email: "${email}", account_status: "ACTIVE" }`)
-    try {
-      const res = await axios.post('/api/users/', { email, account_status: 'ACTIVE' })
-      setUserId(res.data.user_id)
-      addLog('res', `✓ 201 Created  user_id: "${res.data.user_id}"`)
-      setStep(2)
-      setUserDone(true)
-    } catch (e) {
-      addLog('err', `✗ ${e.response?.status ?? 'Network'} ${JSON.stringify(e.response?.data ?? e.message)}`)
+  useEffect(() => () => {
+    if (pollRef.current) {
+      window.clearInterval(pollRef.current)
     }
-    setLoadingUser(false)
+  }, [])
+
+  function stopPolling() {
+    if (pollRef.current) {
+      window.clearInterval(pollRef.current)
+      pollRef.current = null
+    }
+  }
+
+  async function fetchGenerationStatus(targetRequestId) {
+    const response = await axios.get(`/api/requests/${targetRequestId}/generate/`)
+    return response.data
+  }
+
+  function beginPolling(targetRequestId) {
+    stopPolling()
+
+    pollRef.current = window.setInterval(async () => {
+      try {
+        const status = await fetchGenerationStatus(targetRequestId)
+        setGenerationState(status)
+
+        if (status.status === 'COMPLETED') {
+          stopPolling()
+          setLoadingGen(false)
+          setGenDone(true)
+          setStep(3)
+          const completedResult = {
+            song: status.song,
+            strategy: status.metadata?.strategy,
+            generation_id: status.generation_id,
+            metadata: status.metadata,
+          }
+          setResult(completedResult)
+          addLog('res', `✓ Generation completed  generation_id: "${status.generation_id}"`)
+          onNotify?.({
+            type: 'success',
+            title: 'Song generated',
+            message: `Your song "${status.song?.title || songName}" is ready.`,
+          })
+        }
+
+        if (status.status === 'FAILED') {
+          stopPolling()
+          setLoadingGen(false)
+          addLog('err', `✗ Generation failed ${status.error || 'Unknown error'}`)
+          onNotify?.({
+            type: 'error',
+            title: 'Generation failed',
+            message: status.error || 'The AI service could not generate this song.',
+          })
+        }
+      } catch (error) {
+        stopPolling()
+        setLoadingGen(false)
+        addLog('err', `✗ Polling failed ${error.response?.data?.error ?? error.message}`)
+        onNotify?.({
+          type: 'error',
+          title: 'Status check failed',
+          message: error.response?.data?.error ?? error.message,
+        })
+      }
+    }, 2500)
   }
 
   async function createRequest() {
+    if (!activeUserId) {
+      addLog('err', '✗ Authenticated user session is missing.')
+      return
+    }
+
     setLoadingReq(true)
-    const body = { user: userId, song_name: songName, genre, mood, singer_style: singerStyle, description }
+    const body = { user: activeUserId, song_name: songName, genre, mood, singer_style: singerStyle, description }
     addLog('req', `→ POST /api/requests/  song_name: "${songName}"  genre: "${genre}"  mood: "${mood}"`)
     try {
       const res = await axios.post('/api/requests/', body)
       setRequestId(res.data.request_id)
       addLog('res', `✓ 201 Created  request_id: "${res.data.request_id}"`)
-      setStep(3)
+      setStep(2)
       setReqDone(true)
     } catch (e) {
       addLog('err', `✗ ${e.response?.status ?? 'Network'} ${JSON.stringify(e.response?.data ?? e.message)}`)
@@ -78,29 +138,37 @@ export default function StepForm({
 
   async function generateSong() {
     setLoadingGen(true)
+    setGenDone(false)
     addLog('info', `⚡ Triggering generation for request: ${requestId}`)
     addLog('req', `→ POST /api/requests/${requestId}/generate/`)
     try {
       const res = await axios.post(`/api/requests/${requestId}/generate/`)
-      const d = res.data
-      addLog('res', `✓ 201 Song generated  strategy: "${d.strategy}"`)
-      addLog('res', `✓ generation_id: "${d.generation_id}"`)
-      addLog('res', `✓ audio_url: "${d.song.audio_url}"`)
-      setResult(d)
-      setGenDone(true)
-      setStep(4)
+      setGenerationState(res.data)
+      addLog('info', `… job queued  status: "${res.data.status}" progress: ${res.data.progress_percent}%`)
+      onNotify?.({
+        type: 'info',
+        title: 'Generation started',
+        message: 'The AI service is creating your song now.',
+      })
+      beginPolling(requestId)
     } catch (e) {
+      setLoadingGen(false)
       addLog('err', `✗ ${e.response?.status ?? 'Network'} ${e.response?.data?.error ?? e.message}`)
+      onNotify?.({
+        type: 'error',
+        title: 'Generation failed to start',
+        message: e.response?.data?.error ?? e.message,
+      })
     }
-    setLoadingGen(false)
   }
 
   function handleReset() {
-    setEmail(uniqueEmail())
+    stopPolling()
     setSongName('Midnight Dreams')
     setGenre('lo-fi'); setMood('chill')
     setSingerStyle(''); setDescription('')
-    setUserDone(false); setReqDone(false); setGenDone(false)
+    setReqDone(false); setGenDone(false)
+    setGenerationState(null)
     onReset()
   }
 
@@ -108,32 +176,19 @@ export default function StepForm({
     <div className={styles.col}>
       <StepIndicator step={step} />
 
-      {/* ── Card 1 ── */}
       <div className={styles.card}>
         <div className={styles.cardTitle}>
-          <span className={styles.cardIcon}>👤</span>
-          Step 1 — User
-        </div>
-        <div className={styles.field}>
-          <label>Email Address</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} disabled={userDone} placeholder="demo@example.com" />
-        </div>
-        <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={createUser} disabled={loadingUser || userDone}>
-          {loadingUser ? <span className={styles.spinner} /> : null}
-          {userDone ? '✓ User Created' : loadingUser ? 'Creating…' : '→ Create User'}
-        </button>
-      </div>
-
-      {/* ── Card 2 ── */}
-      <div className={`${styles.card} ${step < 2 ? styles.disabled : ''}`}>
-        <div className={styles.cardTitle}>
           <span className={styles.cardIcon}>🎛</span>
-          Step 2 — Generation Request
+          Step 1 — Generation Request
         </div>
 
-        {userId && (
+        <div className={styles.authNotice}>
+          Profile created for <strong>{authUser?.displayName || email}</strong>. Your server-verified user session is ready to submit song requests.
+        </div>
+
+        {activeUserId && (
           <div className={styles.infoBox}>
-            ✓ User ready — <code>{userId.slice(0, 18)}…</code>
+            ✓ User ready — <code>{activeUserId.slice(0, 18)}…</code>
           </div>
         )}
 
@@ -163,17 +218,16 @@ export default function StepForm({
           <label>Description <span className={styles.opt}>(optional)</span></label>
           <textarea value={description} onChange={e => setDescription(e.target.value)} disabled={reqDone} placeholder="Rainy night vibes…" />
         </div>
-        <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={createRequest} disabled={loadingReq || reqDone || step < 2}>
+        <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={createRequest} disabled={loadingReq || reqDone || step < 1}>
           {loadingReq ? <span className={styles.spinner} /> : null}
           {reqDone ? '✓ Request Created' : loadingReq ? 'Creating…' : '→ Create Request'}
         </button>
       </div>
 
-      {/* ── Card 3 ── */}
-      <div className={`${styles.card} ${step < 3 ? styles.disabled : ''}`}>
+      <div className={`${styles.card} ${step < 2 ? styles.disabled : ''}`}>
         <div className={styles.cardTitle}>
           <span className={styles.cardIcon}>⚡</span>
-          Step 3 — Generate Song
+          Step 2 — Generate Song
         </div>
 
         {requestId && (
@@ -195,7 +249,32 @@ export default function StepForm({
           </div>
         </div>
 
-        <button className={`${styles.btn} ${styles.btnGenerate}`} onClick={generateSong} disabled={loadingGen || genDone || step < 3}>
+        {generationState ? (
+          <div className={styles.progressCard}>
+            <div className={styles.progressHeader}>
+              <span className={styles.progressStatus}>
+                {generationState.status || 'QUEUED'}
+              </span>
+              <span className={styles.progressPct}>
+                {generationState.progress_percent ?? 0}%
+              </span>
+            </div>
+            <div className={styles.progressTrack}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${generationState.progress_percent ?? 0}%` }}
+              />
+            </div>
+            <div className={styles.progressDetail}>
+              {generationState.metadata?.progress_detail
+                || (generationState.status === 'FAILED'
+                  ? generationState.error
+                  : 'Waiting for the AI service to return audio')}
+            </div>
+          </div>
+        ) : null}
+
+        <button className={`${styles.btn} ${styles.btnGenerate}`} onClick={generateSong} disabled={loadingGen || genDone || step < 2}>
           {loadingGen ? <span className={`${styles.spinner} ${styles.spinnerDark}`} /> : null}
           {genDone ? '✓ Generated!' : loadingGen ? 'Generating…' : '✨ Generate Song'}
         </button>

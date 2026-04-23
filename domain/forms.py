@@ -6,7 +6,13 @@ from .models import Admin, AdminAction, MusicGenerationRequest, Song, User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["email", "account_status"]
+        fields = [
+            "email",
+            "display_name",
+            "username",
+            "profile_image_url",
+            "account_status",
+        ]
 
 
 class AdminForm(forms.ModelForm):
@@ -31,8 +37,6 @@ class MusicGenerationRequestForm(forms.ModelForm):
             "mood",
             "singer_style",
             "description",
-            "completed_at",
-            "produced_song",
         ]
 
 

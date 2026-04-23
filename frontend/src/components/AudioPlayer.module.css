@@ -86,6 +86,81 @@
   box-shadow: var(--shadow-sm);
 }
 
+.volumeRow {
+  display: grid;
+  grid-template-columns: auto minmax(100px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.volumeIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.volumeRange {
+  width: 100%;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.volumeRange::-webkit-slider-runnable-track {
+  height: 7px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(100,60,20,.12);
+  background:
+    linear-gradient(90deg, var(--lavender-strong), var(--orange-strong)) 0 / var(--progress, 0%) 100% no-repeat,
+    rgba(255,255,255,.68);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
+}
+
+.volumeRange::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--lavender-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+.volumeRange::-moz-range-track {
+  height: 7px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(100,60,20,.12);
+  background: rgba(255,255,255,.68);
+}
+
+.volumeRange::-moz-range-progress {
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lavender-strong), var(--orange-strong));
+}
+
+.volumeRange::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--lavender-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+.volumeValue {
+  min-width: 42px;
+  text-align: right;
+  color: var(--text-muted);
+  font-size: .74rem;
+  font-weight: 900;
+  font-family: "Fira Code", monospace;
+}
+
 .badge {
   font-size: .68rem; font-weight: 900; letter-spacing: .05em;
   padding: 5px 10px; border-radius: 999px;
@@ -107,4 +182,28 @@
   flex: 1; height: 36px;
   accent-color: var(--orange-strong);
   border-radius: 8px;
+}
+
+.realAudioSide {
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .player,
+  .realAudio {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .playBtn,
+  .badge {
+    align-self: flex-start;
+  }
+
+  .realAudioSide {
+    min-width: 0;
+  }
 }

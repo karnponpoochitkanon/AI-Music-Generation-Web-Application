@@ -38,9 +38,13 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
 
     # Strategy interface
 
-    def generate(self, request) -> GenerationResult:
+    def generate(self, request, progress_callback=None) -> GenerationResult:
+        if progress_callback:
+            progress_callback(15, "Submitting request to Suno")
         task_id = self._submit_generation(request)
-        record = self._poll_until_complete(task_id)
+        if progress_callback:
+            progress_callback(25, "Suno accepted the job")
+        record = self._poll_until_complete(task_id, progress_callback=progress_callback)
         return self._build_result(task_id, record)
 
 
@@ -68,10 +72,14 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
         return task_id
 
     # Step 2 — poll record-info until terminal status
-    def _poll_until_complete(self, task_id: str) -> dict:
+    def _poll_until_complete(self, task_id: str, progress_callback=None) -> dict:
         for attempt in range(1, _POLL_MAX_ATTEMPTS + 1):
             record = self._fetch_record(task_id)
             status = record.get("status", "")
+
+            if progress_callback:
+                progress = min(90, 25 + attempt)
+                progress_callback(progress, f"Suno status: {status or 'PENDING'}")
 
             if status == _SUCCESS_STATUS:
                 return record

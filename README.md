@@ -59,32 +59,43 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
+npm --prefix frontend install
 ```
 
 This installs a Django version in the supported `5.x` to `6.x` range.
 
-### 3) Run database migrations
+### 3) Create the shared environment file
+
+```bash
+cp .env.example .env
+```
+
+Fill in `GOOGLE_OAUTH_CLIENT_ID` in the root `.env`. Both Django and the Vite frontend read this same file.
+
+### 4) Run database migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 4) Create admin account (optional)
+### 5) Create admin account (optional)
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 5) Start development server
+### 6) Start development servers
 
 ```bash
 python manage.py runserver
+npm --prefix frontend run dev
 ```
 
 Open:
 
 - `http://127.0.0.1:8000/` redirects to API docs
 - `http://127.0.0.1:8000/admin/`
+- `http://127.0.0.1:5173/` frontend app
 
 ## Public API
 
@@ -220,17 +231,12 @@ without changing any other code.
 | `domain/services/generation/factory.py` | Centralised selection — reads `SONG_GENERATION_STRATEGY` from environment |
 | `domain/services/song_generation_service.py` | Orchestrates strategy + DB writes |
 
-### Setting the API key (never commit secrets)
+### Setting API keys (never commit secrets)
 
-1. Copy the example env file:
-
-```bash
-cp .env.example .env
-```
-
-2. Open `.env` and fill in your Suno API key:
+Open the root `.env` and fill in the values you need:
 
 ```
+GOOGLE_OAUTH_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 SUNO_API_KEY=your-suno-api-key-here
 ```
 
@@ -311,4 +317,3 @@ The strategy will:
 
 This project is licensed under the MIT License.  
 See [LICENSE](LICENSE) for details.
-

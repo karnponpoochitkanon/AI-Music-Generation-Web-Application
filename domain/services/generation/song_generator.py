@@ -10,5 +10,5 @@ class SongGenerator:
     def set_strategy(self, strategy: SongGenerationStrategy) -> None:
         self._strategy = strategy
 
-    def generate(self, request) -> GenerationResult:
-        return self._strategy.generate(request)
+    def generate(self, request, progress_callback=None) -> GenerationResult:
+        return self._strategy.generate(request, progress_callback=progress_callback)

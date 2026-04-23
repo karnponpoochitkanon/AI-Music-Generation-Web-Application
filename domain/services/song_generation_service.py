@@ -14,9 +14,9 @@ class SongGenerationService:
     def set_strategy(self, strategy: SongGenerationStrategy) -> None:
         self._generator.set_strategy(strategy)
 
-    def execute(self, request: MusicGenerationRequest) -> tuple:
+    def execute(self, request: MusicGenerationRequest, progress_callback=None) -> tuple:
         """Returns (Song, GenerationResult) so callers can access generation metadata."""
-        result = self._generator.generate(request)
+        result = self._generator.generate(request, progress_callback=progress_callback)
 
         song = Song.objects.create(
             title=request.song_name,

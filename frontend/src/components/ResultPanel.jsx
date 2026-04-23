@@ -66,8 +66,9 @@ function JsonLine({ obj, depth = 0 }) {
   )
 }
 
-export default function ResultPanel({ result }) {
+export default function ResultPanel({ result, generationState, onVisibilityToggle, isUpdatingVisibility }) {
   const [playback, setPlayback] = useState({ isPlaying: false, progress: 0 })
+  const [shareMessage, setShareMessage] = useState('')
 
   if (!result) {
     return (
@@ -75,15 +76,47 @@ export default function ResultPanel({ result }) {
         <div className={styles.cardTitle}>
           <span>💿</span> Result
         </div>
-        <div className={styles.empty}>
-          <div className={styles.emptyIcon}>♪</div>
-          <p>Your generated song will appear here</p>
-        </div>
+        {generationState?.status ? (
+          <div className={styles.pending}>
+            <div className={styles.pendingBadge}>{generationState.status}</div>
+            <div className={styles.pendingTitle}>AI generation in progress</div>
+            <div className={styles.pendingBar}>
+              <div
+                className={styles.pendingFill}
+                style={{ width: `${generationState.progress_percent ?? 0}%` }}
+              />
+            </div>
+            <p className={styles.pendingText}>
+              {generationState.metadata?.progress_detail || generationState.error || 'Waiting for the AI service'}
+            </p>
+          </div>
+        ) : (
+          <div className={styles.empty}>
+            <div className={styles.emptyIcon}>♪</div>
+            <p>Your generated song will appear here</p>
+          </div>
+        )}
       </div>
     )
   }
 
   const { song, strategy, generation_id, metadata } = result
+  const isPrivate = song.visibility === 'PRIVATE'
+
+  async function handleCopyShareLink() {
+    if (isPrivate) {
+      setShareMessage('Switch the song to public before sharing it.')
+      return
+    }
+
+    const shareUrl = `${window.location.origin}/share/${song.song_id}`
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setShareMessage('Public share link copied.')
+    } catch {
+      setShareMessage(shareUrl)
+    }
+  }
 
   return (
     <div className={styles.card}>
@@ -98,6 +131,14 @@ export default function ResultPanel({ result }) {
             <div className={styles.resultTitle}>{song.title}</div>
             <div className={styles.resultSub}>Owner: {song.owner_id?.slice(0, 16)}…</div>
           </div>
+          <button
+            className={`${styles.visibilityToggle} ${isPrivate ? styles.privateToggle : styles.publicToggle}`}
+            disabled={isUpdatingVisibility}
+            onClick={() => onVisibilityToggle?.(song)}
+            type="button"
+          >
+            {isUpdatingVisibility ? 'Updating…' : isPrivate ? 'Private' : 'Public'}
+          </button>
           <span className={strategy === 'suno' ? styles.tagSuno : styles.tagMock}>
             {(strategy || 'mock').toUpperCase()}
           </span>
@@ -111,8 +152,23 @@ export default function ResultPanel({ result }) {
           onPlaybackChange={setPlayback}
         />
 
+        <div className={styles.shareRow}>
+          <button
+            className={styles.shareButton}
+            type="button"
+            onClick={handleCopyShareLink}
+          >
+            {isPrivate ? 'Make public to share' : 'Copy share link'}
+          </button>
+          <a className={styles.downloadButton} href={`/songs/${song.song_id}/download/`}>
+            Download song
+          </a>
+        </div>
+        {shareMessage ? <div className={styles.shareMessage}>{shareMessage}</div> : null}
+
         <div className={styles.fields}>
           <Field label="Status"        value="SUCCESS"       accent="green" />
+          <Field label="Visibility"    value={song.visibility} accent={isPrivate ? null : 'purple'} />
           <Field label="Strategy"      value={(strategy || '').toUpperCase()} accent="purple" />
           <Field label="Song ID"       value={song.song_id}  mono />
           <Field label="Generation ID" value={generation_id} mono />

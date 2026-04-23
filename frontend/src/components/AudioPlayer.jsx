@@ -69,6 +69,8 @@ function buildMockAudioBuffer(ctx) {
 export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
   const ctxRef     = useRef(null)
   const srcRef     = useRef(null)
+  const gainRef    = useRef(null)
+  const audioRef   = useRef(null)
   const startRef   = useRef(0)
   const offsetRef  = useRef(0)
   const bufRef     = useRef(null)
@@ -77,12 +79,22 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
   const [playing,  setPlaying]  = useState(false)
   const [progress, setProgress] = useState(0)  // 0-1
   const [duration, setDuration] = useState(0)
+  const [volume, setVolume]     = useState(0.85)
 
   const isMock = strategy === 'mock' || !audioUrl || audioUrl.startsWith('/static/')
 
   useEffect(() => {
     onPlaybackChange?.({ isPlaying: playing, progress })
   }, [onPlaybackChange, playing, progress])
+
+  useEffect(() => {
+    if (gainRef.current) {
+      gainRef.current.gain.value = volume
+    }
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
 
   // ── cleanup on unmount ──
   useEffect(() => () => {
@@ -110,6 +122,22 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
     return () => cancelAnimationFrame(rafRef.current)
   }, [playing, duration])
 
+  function ensureMockAudioGraph() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext
+    if (!AudioContextClass) {
+      throw new Error('Web Audio API is not supported in this browser.')
+    }
+
+    if (!ctxRef.current || ctxRef.current.state === 'closed' || !gainRef.current) {
+      ctxRef.current = new AudioContextClass()
+      gainRef.current = ctxRef.current.createGain()
+      gainRef.current.connect(ctxRef.current.destination)
+    }
+
+    gainRef.current.gain.value = volume
+    return { ctx: ctxRef.current, gain: gainRef.current }
+  }
+
   // ── play / pause ──
   async function togglePlay() {
     if (!isMock) return  // real audio handled by <audio> tag
@@ -123,11 +151,7 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
       return
     }
 
-    // init context + buffer once
-    if (!ctxRef.current) {
-      ctxRef.current = new (window.AudioContext || window.webkitAudioContext)()
-    }
-    const ctx = ctxRef.current
+    const { ctx, gain } = ensureMockAudioGraph()
     if (ctx.state === 'suspended') await ctx.resume()
 
     if (!bufRef.current) {
@@ -137,7 +161,7 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
 
     const src = ctx.createBufferSource()
     src.buffer = bufRef.current
-    src.connect(ctx.destination)
+    src.connect(gain)
     src.start(0, offsetRef.current)
     src.onended = () => {
       if (offsetRef.current + (ctx.currentTime - startRef.current) >= bufRef.current.duration - 0.05) {
@@ -155,12 +179,12 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
     offsetRef.current = nextProgress * bufRef.current.duration
     setProgress(nextProgress)
     if (playing) {
-      const ctx = ctxRef.current
+      const { ctx, gain } = ensureMockAudioGraph()
       if (srcRef.current) srcRef.current.onended = null
       srcRef.current?.stop()
       const src = ctx.createBufferSource()
       src.buffer = bufRef.current
-      src.connect(ctx.destination)
+      src.connect(gain)
       src.start(0, offsetRef.current)
       src.onended = () => {
         if (offsetRef.current + (ctx.currentTime - startRef.current) >= bufRef.current.duration - 0.05) {
@@ -174,6 +198,10 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
 
   function seek(e) {
     seekToRatio(Number(e.currentTarget.value) / 1000)
+  }
+
+  function handleVolumeChange(e) {
+    setVolume(Number(e.currentTarget.value) / 100)
   }
 
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
@@ -207,6 +235,23 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
               aria-label="Seek audio"
               style={{ '--progress': `${progress * 100}%` }}
             />
+            <div className={styles.volumeRow}>
+              <span className={styles.volumeIcon}>
+                <VolumeIcon volume={volume} />
+              </span>
+              <input
+                className={styles.volumeRange}
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(volume * 100)}
+                onChange={handleVolumeChange}
+                onInput={handleVolumeChange}
+                aria-label="Adjust volume"
+                style={{ '--progress': `${volume * 100}%` }}
+              />
+              <span className={styles.volumeValue}>{Math.round(volume * 100)}%</span>
+            </div>
           </div>
           <span className={styles.badge}>WEB AUDIO</span>
         </>
@@ -214,6 +259,7 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
         // ── Suno: real audio URL ──
         <div className={styles.realAudio}>
           <audio
+            ref={audioRef}
             controls
             src={audioUrl}
             className={styles.audioEl}
@@ -232,9 +278,28 @@ export default function AudioPlayer({ audioUrl, strategy, onPlaybackChange }) {
                 : 0,
             })}
           />
-          <span className={`${styles.badge} ${styles.sunoBadge}`}>
-            SUNO
-          </span>
+          <div className={styles.realAudioSide}>
+            <div className={styles.volumeRow}>
+              <span className={styles.volumeIcon}>
+                <VolumeIcon volume={volume} />
+              </span>
+              <input
+                className={styles.volumeRange}
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(volume * 100)}
+                onChange={handleVolumeChange}
+                onInput={handleVolumeChange}
+                aria-label="Adjust volume"
+                style={{ '--progress': `${volume * 100}%` }}
+              />
+              <span className={styles.volumeValue}>{Math.round(volume * 100)}%</span>
+            </div>
+            <span className={`${styles.badge} ${styles.sunoBadge}`}>
+              SUNO
+            </span>
+          </div>
         </div>
       )}
     </div>
@@ -253,6 +318,35 @@ function PauseIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+    </svg>
+  )
+}
+
+function VolumeIcon({ volume }) {
+  if (volume === 0) {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <line x1="23" y1="9" x2="17" y2="15" />
+        <line x1="17" y1="9" x2="23" y2="15" />
+      </svg>
+    )
+  }
+
+  if (volume < 0.5) {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+      <path d="M19 5a9 9 0 0 1 0 14" />
     </svg>
   )
 }

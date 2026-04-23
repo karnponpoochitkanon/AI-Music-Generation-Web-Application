@@ -20,10 +20,15 @@ router.register("admin-actions", AdminActionViewSet, basename="drf-admin-actions
 urlpatterns = [
     path("", views.index, name="index"),
     path("demo/", views.demo, name="demo"),
+    path("api/auth/google/", views.google_auth_login, name="google_auth_login"),
+    path("api/auth/session/", views.auth_session, name="auth_session"),
+    path("api/auth/profile/", views.auth_profile, name="auth_profile"),
+    path("api/auth/logout/", views.auth_logout, name="auth_logout"),
     path("api/drf/", include(router.urls)),
     path("songs/", views.songs_list, name="songs_list"),
     path("songs/create/", views.create_song, name="create_song"),
     path("songs/<uuid:pk>/", views.get_song_detail, name="get_song_detail"),
+    path("songs/<uuid:pk>/download/", views.download_song, name="download_song"),
     path("songs/<uuid:pk>/delete/", views.delete_song, name="delete_song"),
     path(
         "songs/<uuid:pk>/visibility/",

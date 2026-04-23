@@ -144,3 +144,4 @@ SPECTACULAR_SETTINGS = {
 SONG_GENERATION_STRATEGY = os.environ.get("SONG_GENERATION_STRATEGY", "mock")
 SUNO_API_KEY = os.environ.get("SUNO_API_KEY", "")
 SUNO_API_URL = os.environ.get("SUNO_API_URL", "https://api.sunoapi.org")
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")

@@ -6,7 +6,15 @@ from .models import Admin, AdminAction, MusicGenerationRequest, Song, User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["user_id", "email", "account_status", "created_at"]
+        fields = [
+            "user_id",
+            "email",
+            "display_name",
+            "username",
+            "profile_image_url",
+            "account_status",
+            "created_at",
+        ]
         read_only_fields = ["user_id", "created_at"]
 
 
@@ -35,10 +43,26 @@ class MusicGenerationRequestSerializer(serializers.ModelSerializer):
             "mood",
             "singer_style",
             "description",
+            "generation_status",
+            "progress_percent",
+            "generation_error",
+            "generation_id",
+            "generation_metadata",
+            "started_at",
             "completed_at",
             "produced_song",
         ]
-        read_only_fields = ["request_id"]
+        read_only_fields = [
+            "request_id",
+            "generation_status",
+            "progress_percent",
+            "generation_error",
+            "generation_id",
+            "generation_metadata",
+            "started_at",
+            "completed_at",
+            "produced_song",
+        ]
 
 
 class AdminActionSerializer(serializers.ModelSerializer):

@@ -13,7 +13,7 @@ class SongGenerationStrategy(ABC):
     """Abstract strategy — all concrete strategies must implement generate()."""
 
     @abstractmethod
-    def generate(self, request) -> GenerationResult:
+    def generate(self, request, progress_callback=None) -> GenerationResult:
         """
         Generate a song from a MusicGenerationRequest.
 

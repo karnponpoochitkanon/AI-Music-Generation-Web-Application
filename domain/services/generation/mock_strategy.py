@@ -1,4 +1,5 @@
 import uuid
+import time
 
 from .base import GenerationResult, SongGenerationStrategy
 
@@ -21,9 +22,19 @@ class MockSongGenerationStrategy(SongGenerationStrategy):
     the request's primary key, so it is stable across multiple calls.
     """
 
-    def generate(self, request) -> GenerationResult:
+    def generate(self, request, progress_callback=None) -> GenerationResult:
         # uuid5 is deterministic: same request_id → same generation_id every time.
         generation_id = str(uuid.uuid5(_MOCK_NAMESPACE, str(request.request_id)))
+
+        if progress_callback:
+          progress_callback(20, "Composing melody layers")
+        time.sleep(1.0)
+        if progress_callback:
+          progress_callback(55, "Arranging mock instrumentation")
+        time.sleep(1.0)
+        if progress_callback:
+          progress_callback(85, "Rendering preview audio")
+        time.sleep(0.8)
 
         return GenerationResult(
             audio_url=MOCK_AUDIO_URL,
