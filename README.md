@@ -221,13 +221,24 @@ Delete records through the exposed API endpoints.
 The project implements the **Strategy Pattern** to swap between two song-generation backends
 without changing any other code.
 
+### Class Diagram
+
+![Class Diagram](class%20diagram/Class%20Diagram.png)
+
+### Sequence Diagram
+
+![Sequence Diagram](sequence%20diagram/sequence%20diagram.png)
+
 ### Strategy files
 
 | File | Role |
 |---|---|
-| `domain/services/generation/base.py` | Abstract interface (`SongGenerationStrategy`) and `GenerationResult` dataclass |
+| `domain/services/generation/song_generation_strategy.py` | Abstract interface (`SongGenerationStrategy`) |
+| `domain/services/generation/generation_result.py` | `GenerationResult` dataclass |
 | `domain/services/generation/mock_strategy.py` | Mock strategy — deterministic, no network required |
-| `domain/services/generation/suno_strategy.py` | Suno API strategy — calls sunoapi.org |
+| `domain/services/generation/suno_api_song_generation_strategy.py` | Suno API strategy — calls sunoapi.org |
+| `domain/services/generation/suno_generation_error.py` | `SunoGenerationError` exception |
+| `domain/services/generation/song_generator.py` | `SongGenerator` context — holds and delegates to strategy |
 | `domain/services/generation/factory.py` | Centralised selection — reads `SONG_GENERATION_STRATEGY` from environment |
 | `domain/services/song_generation_service.py` | Orchestrates strategy + DB writes |
 
