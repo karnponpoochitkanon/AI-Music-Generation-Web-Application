@@ -2,6 +2,10 @@
 
 > A production-minded Django foundation for building the next wave of AI-powered music creation.
 
+## Demo
+
+[![Demo Video](https://img.shields.io/badge/YouTube-Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/jBJ7Uc0_8s0?si=ErlUpd_RZrZNIsX7)
+
 ![Django](https://img.shields.io/badge/Django-5.x%20%7C%206.x-0C4B33?style=for-the-badge&logo=django)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Foundation%20Stage-ffb300?style=for-the-badge)
