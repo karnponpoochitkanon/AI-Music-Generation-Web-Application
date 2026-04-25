@@ -18,7 +18,7 @@ This project is the backend core of an **AI Music Generation Platform** designed
 Current repository state is an initial Django scaffold, prepared for structured expansion.
 The project supports Django 5.x and 6.x for class use and no longer pins the older 4.2 release.
 
-## Domain Model Diagram
+## Domain Model Diagram [Update]
 
 This diagram shows the current domain model used in the project.
 
