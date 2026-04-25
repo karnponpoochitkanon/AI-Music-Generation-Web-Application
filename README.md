@@ -354,8 +354,8 @@ See [LICENSE](LICENSE) for details.
 | FR-16 | Allow guests to access and play music via shared public links without authentication | ✅ Done |
 | FR-17 | Allow users and guests to download music files from public shared links | ✅ Done |
 | FR-18 | Provide basic music playback controls including play, pause, and volume adjustment | ✅ Done |
-| FR-19 | Allow administrators to view and manage user accounts | ❌ Not implemented |
-| FR-20 | Allow administrators to suspend or restrict user accounts | ❌ Not implemented |
+| FR-19 | Allow administrators to view and manage user accounts | ✅ Done — available via Django Admin at `/admin/` |
+| FR-20 | Allow administrators to suspend or restrict user accounts | ✅ Done — available via Django Admin at `/admin/` using the AdminAction model (RESTRICT / SUSPEND / RESTORE) |
 | FR-21 | Store generated music files reliably to prevent data loss | ❌ Not implemented |
 | FR-22 | Support system deployment and updates with minimal downtime | ❌ Not implemented |
 
