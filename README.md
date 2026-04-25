@@ -330,6 +330,35 @@ The strategy will:
 This project is licensed under the MIT License.  
 See [LICENSE](LICENSE) for details.
 
+## Functional Requirements Coverage
+
+21 / 22 requirements implemented.
+
+| FR | Description | Status |
+|---|---|---|
+| FR-1 | Authenticate users using Google OAuth | ✅ Done |
+| FR-2 | Restrict access to protected routes to authenticated users only | ✅ Done |
+| FR-3 | Redirect unauthenticated users to login interface | ✅ Done |
+| FR-4 | Generate music based on song name, genre, mood, singer style, and description | ✅ Done |
+| FR-5 | Send music generation requests to the AI generation service | ✅ Done |
+| FR-6 | Display the progress status of music generation | ✅ Done |
+| FR-7 | Handle generation failures and notify users | ✅ Done |
+| FR-8 | Save generated music automatically to the user's library | ✅ Done |
+| FR-9 | Display a list of all songs in the user's library | ✅ Done |
+| FR-10 | Allow users to play music directly from the library | ✅ Done |
+| FR-11 | Allow users to delete music from the library | ✅ Done |
+| FR-12 | Display detailed information of each song including generation parameters | ✅ Done |
+| FR-13 | Allow users to set songs as public or private | ✅ Done |
+| FR-14 | Restrict access to private songs to authorized users only | ✅ Done |
+| FR-15 | Generate shareable web links for public songs | ✅ Done |
+| FR-16 | Allow guests to access and play music via shared public links without authentication | ✅ Done |
+| FR-17 | Allow users and guests to download music files from public shared links | ✅ Done |
+| FR-18 | Provide basic music playback controls including play, pause, and volume adjustment | ✅ Done |
+| FR-19 | Allow administrators to view and manage user accounts | ✅ Done |
+| FR-20 | Allow administrators to suspend or restrict user accounts | ✅ Done |
+| FR-21 | Store generated music files reliably to prevent data loss | ✅ Done |
+| FR-22 | Support system deployment and updates with minimal downtime | ❌ Not implemented |
+
 ## Demo
 
 [Watch the demo on Google Drive](https://drive.google.com/file/d/1xGL9GbFZLT97MwLpRpnXdzSiIih6zYH-/view?usp=sharing)
