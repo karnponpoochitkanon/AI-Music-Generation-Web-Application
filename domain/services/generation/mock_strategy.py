@@ -1,7 +1,8 @@
 import uuid
 import time
 
-from .base import GenerationResult, SongGenerationStrategy
+from .generation_result import GenerationResult
+from .song_generation_strategy import SongGenerationStrategy
 
 # Namespace UUID used to derive deterministic IDs from request data.
 _MOCK_NAMESPACE = uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567890")

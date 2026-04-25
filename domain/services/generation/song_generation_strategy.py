@@ -1,12 +1,6 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 
-
-@dataclass
-class GenerationResult:
-    audio_url: str
-    generation_id: str | None = None
-    metadata: dict = field(default_factory=dict)
+from .generation_result import GenerationResult
 
 
 class SongGenerationStrategy(ABC):

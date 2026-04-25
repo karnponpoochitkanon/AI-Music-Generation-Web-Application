@@ -1,8 +1,8 @@
 from django.conf import settings
 
-from .base import SongGenerationStrategy
+from .song_generation_strategy import SongGenerationStrategy
 from .mock_strategy import MockSongGenerationStrategy
-from .suno_strategy import SunoApiSongGenerationStrategy
+from .suno_api_song_generation_strategy import SunoApiSongGenerationStrategy
 
 # Registry maps the value of SONG_GENERATION_STRATEGY to its strategy class.
 # Add new strategies here — nowhere else needs to change.

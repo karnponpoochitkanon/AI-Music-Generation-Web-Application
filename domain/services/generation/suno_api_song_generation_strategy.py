@@ -3,23 +3,18 @@ import time
 import requests
 from django.conf import settings
 
-from .base import GenerationResult, SongGenerationStrategy
+from .generation_result import GenerationResult
+from .song_generation_strategy import SongGenerationStrategy
+from .suno_generation_error import SunoGenerationError
 
-# Suno API v1 endpoints
 _GENERATE_URL = "https://api.sunoapi.org/api/v1/generate"
 _RECORD_INFO_URL = "https://api.sunoapi.org/api/v1/generate/record-info"
 
-# Terminal statuses — polling stops when one of these is reached
 _SUCCESS_STATUS = "SUCCESS"
 _TERMINAL_STATUSES = {"SUCCESS", "FAILED", "ERROR"}
 
-# Polling configuration
 _POLL_INTERVAL_SECONDS = 5
-_POLL_MAX_ATTEMPTS = 60  # 5 min total ceiling
-
-
-class SunoGenerationError(Exception):
-    """Raised when the Suno API returns a failure or times out."""
+_POLL_MAX_ATTEMPTS = 60
 
 
 class SunoApiSongGenerationStrategy(SongGenerationStrategy):
@@ -37,8 +32,6 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
         self.api_key = api_key or getattr(settings, "SUNO_API_KEY", "")
         self.callback_url = getattr(settings, "SUNO_CALLBACK_URL", "https://example.com/suno/callback")
 
-    # Strategy interface
-
     def generate(self, request, progress_callback=None) -> GenerationResult:
         if progress_callback:
             progress_callback(15, "Submitting request to Suno")
@@ -48,8 +41,6 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
         record = self._poll_until_complete(task_id, progress_callback=progress_callback)
         return self._build_result(task_id, record)
 
-
-    # Step 1 — submit generation task
     def _submit_generation(self, request) -> str:
         payload = {
             "customMode": True,
@@ -77,7 +68,6 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
             )
         return task_id
 
-    # Step 2 — poll record-info until terminal status
     def _poll_until_complete(self, task_id: str, progress_callback=None) -> dict:
         for attempt in range(1, _POLL_MAX_ATTEMPTS + 1):
             record = self._fetch_record(task_id)
@@ -96,7 +86,6 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
                     f"for taskId '{task_id}'."
                 )
 
-            # PENDING / TEXT_SUCCESS / FIRST_SUCCESS — keep waiting
             time.sleep(_POLL_INTERVAL_SECONDS)
 
         raise SunoGenerationError(
@@ -118,13 +107,10 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
         if isinstance(inner, dict):
             return inner
         if isinstance(inner, list):
-            # list of clips — wrap for uniform handling
             return {"clips": inner, "status": data.get("status", "")}
         return data if isinstance(data, dict) else {}
 
-    # Step 3 — build GenerationResult from completed record
     def _build_result(self, task_id: str, record: dict) -> GenerationResult:
-        # sunoapi.org nests clips under record.response.sunoData
         suno_data = record.get("response", {}).get("sunoData") or []
         clips = suno_data or record.get("clips") or record.get("songs") or []
         audio_url = ""
@@ -151,7 +137,6 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
             },
         )
 
-    # Helpers
     def _auth_headers(self) -> dict:
         return {
             "Authorization": f"Bearer {self.api_key}",

@@ -2,14 +2,9 @@ import uuid
 
 from django.db import models
 
+from .action_type import ActionType
 from .admin_user import Admin
 from .user import User
-
-
-class ActionType(models.TextChoices):
-    RESTRICT = "RESTRICT", "RESTRICT"
-    SUSPEND = "SUSPEND", "SUSPEND"
-    RESTORE = "RESTORE", "RESTORE"
 
 
 class AdminAction(models.Model):

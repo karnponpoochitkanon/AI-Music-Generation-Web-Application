@@ -1,4 +1,5 @@
-from .base import GenerationResult, SongGenerationStrategy
+from .generation_result import GenerationResult
+from .song_generation_strategy import SongGenerationStrategy
 
 
 class SongGenerator:

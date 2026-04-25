@@ -3,11 +3,7 @@ import uuid
 from django.db import models
 
 from .user import User
-
-
-class Visibility(models.TextChoices):
-    PUBLIC = "PUBLIC", "PUBLIC"
-    PRIVATE = "PRIVATE", "PRIVATE"
+from .visibility import Visibility
 
 
 class Song(models.Model):

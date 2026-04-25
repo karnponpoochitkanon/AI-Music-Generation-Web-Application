@@ -2,11 +2,7 @@ import uuid
 
 from django.db import models
 
-
-class AccountStatus(models.TextChoices):
-    ACTIVE = "ACTIVE", "ACTIVE"
-    RESTRICTED = "RESTRICTED", "RESTRICTED"
-    SUSPENDED = "SUSPENDED", "SUSPENDED"
+from .account_status import AccountStatus
 
 
 class User(models.Model):

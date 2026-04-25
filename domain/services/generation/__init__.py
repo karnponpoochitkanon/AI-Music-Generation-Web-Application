@@ -1,8 +1,9 @@
-from .base import GenerationResult, SongGenerationStrategy
+from .generation_result import GenerationResult
 from .factory import get_strategy
 from .mock_strategy import MockSongGenerationStrategy
+from .song_generation_strategy import SongGenerationStrategy
 from .song_generator import SongGenerator
-from .suno_strategy import SunoApiSongGenerationStrategy
+from .suno_api_song_generation_strategy import SunoApiSongGenerationStrategy
 
 __all__ = [
     "SongGenerationStrategy",
