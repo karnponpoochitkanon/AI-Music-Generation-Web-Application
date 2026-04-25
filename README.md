@@ -356,7 +356,7 @@ See [LICENSE](LICENSE) for details.
 | FR-18 | Provide basic music playback controls including play, pause, and volume adjustment | ✅ Done |
 | FR-19 | Allow administrators to view and manage user accounts | ✅ Done |
 | FR-20 | Allow administrators to suspend or restrict user accounts | ✅ Done |
-| FR-21 | Store generated music files reliably to prevent data loss | ✅ Done |
+| FR-21 | Store generated music files reliably to prevent data loss | ❌ Not implemented |
 | FR-22 | Support system deployment and updates with minimal downtime | ❌ Not implemented |
 
 ## Demo
