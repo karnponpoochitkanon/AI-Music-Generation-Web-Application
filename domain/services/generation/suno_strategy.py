@@ -35,6 +35,7 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or getattr(settings, "SUNO_API_KEY", "")
+        self.callback_url = getattr(settings, "SUNO_CALLBACK_URL", "https://example.com/suno/callback")
 
     # Strategy interface
 
@@ -51,6 +52,10 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
     # Step 1 — submit generation task
     def _submit_generation(self, request) -> str:
         payload = {
+            "customMode": True,
+            "model": "V4",
+            "instrumental": False,
+            "callBackUrl": self.callback_url,
             "prompt": self._build_prompt(request),
             "title": request.song_name,
             "tags": f"{request.genre} {request.mood}",
@@ -64,7 +69,8 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
         response.raise_for_status()
         data = response.json()
 
-        task_id = data.get("data", {}).get("taskId") or data.get("taskId")
+        inner = data.get("data") or {}
+        task_id = inner.get("taskId") or data.get("taskId")
         if not task_id:
             raise SunoGenerationError(
                 f"Suno did not return a taskId. Response: {data}"
@@ -108,16 +114,25 @@ class SunoApiSongGenerationStrategy(SongGenerationStrategy):
         )
         response.raise_for_status()
         data = response.json()
-        # The record is nested under "data" in the Suno response envelope
-        return data.get("data", data)
+        inner = data.get("data")
+        if isinstance(inner, dict):
+            return inner
+        if isinstance(inner, list):
+            # list of clips — wrap for uniform handling
+            return {"clips": inner, "status": data.get("status", "")}
+        return data if isinstance(data, dict) else {}
 
     # Step 3 — build GenerationResult from completed record
     def _build_result(self, task_id: str, record: dict) -> GenerationResult:
-        # Suno returns a list of clips; take the first available audio URL
-        clips = record.get("clips") or record.get("songs") or []
+        # sunoapi.org nests clips under record.response.sunoData
+        suno_data = record.get("response", {}).get("sunoData") or []
+        clips = suno_data or record.get("clips") or record.get("songs") or []
         audio_url = ""
-        if clips:
-            audio_url = clips[0].get("audio_url") or clips[0].get("audioUrl", "")
+        for clip in clips:
+            url = clip.get("audioUrl") or clip.get("audio_url") or clip.get("sourceAudioUrl") or ""
+            if url:
+                audio_url = url
+                break
 
         if not audio_url:
             raise SunoGenerationError(

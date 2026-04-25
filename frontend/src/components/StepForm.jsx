@@ -35,7 +35,7 @@ export default function StepForm({
 }) {
   const email = authUser?.email ?? ''
   const activeUserId = userId || authUser?.userId || null
-  const [songName, setSongName]     = useState('Midnight Dreams')
+  const [songName, setSongName]     = useState('')
   const [genre, setGenre]           = useState('lo-fi')
   const [mood, setMood]             = useState('chill')
   const [singerStyle, setSingerStyle] = useState('')
@@ -164,7 +164,7 @@ export default function StepForm({
 
   function handleReset() {
     stopPolling()
-    setSongName('Midnight Dreams')
+    setSongName('')
     setGenre('lo-fi'); setMood('chill')
     setSingerStyle(''); setDescription('')
     setReqDone(false); setGenDone(false)
