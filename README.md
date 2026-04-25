@@ -332,7 +332,7 @@ See [LICENSE](LICENSE) for details.
 
 ## Functional Requirements Coverage
 
-18 / 22 requirements implemented.
+20 / 22 requirements implemented.
 
 | FR | Description | Status |
 |---|---|---|
