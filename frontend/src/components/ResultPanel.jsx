@@ -104,15 +104,10 @@ export default function ResultPanel({ result, generationState, onVisibilityToggl
   const isPrivate = song.visibility === 'PRIVATE'
 
   async function handleCopyShareLink() {
-    if (isPrivate) {
-      setShareMessage('Switch the song to public before sharing it.')
-      return
-    }
-
     const shareUrl = `${window.location.origin}/share/${song.song_id}`
     try {
       await navigator.clipboard.writeText(shareUrl)
-      setShareMessage('Public share link copied.')
+      setShareMessage(isPrivate ? 'Link copied — set song to public so others can open it.' : 'Share link copied.')
     } catch {
       setShareMessage(shareUrl)
     }
@@ -158,7 +153,7 @@ export default function ResultPanel({ result, generationState, onVisibilityToggl
             type="button"
             onClick={handleCopyShareLink}
           >
-            {isPrivate ? 'Make public to share' : 'Copy share link'}
+            Copy share link
           </button>
           <a className={styles.downloadButton} href={`/songs/${song.song_id}/download/`}>
             Download song
