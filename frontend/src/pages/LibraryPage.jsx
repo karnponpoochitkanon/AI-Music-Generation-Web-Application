@@ -124,22 +124,15 @@ export default function LibraryPage({ user, onLogout }) {
   }
 
   async function handleCopyShareLink(song) {
-    if (song.visibility !== 'PUBLIC') {
-      setToast({
-        type: 'info',
-        title: 'Song is private',
-        message: 'Switch the song to public before sharing it.',
-      })
-      return
-    }
-
     const shareUrl = `${window.location.origin}/share/${song.song_id}`
     try {
       await navigator.clipboard.writeText(shareUrl)
       setToast({
         type: 'success',
         title: 'Share link copied',
-        message: shareUrl,
+        message: song.visibility === 'PRIVATE'
+          ? `Link copied — set song to public so others can open it.`
+          : shareUrl,
       })
     } catch {
       setToast({
@@ -278,7 +271,7 @@ export default function LibraryPage({ user, onLogout }) {
                     className={styles.shareButton}
                     onClick={() => handleCopyShareLink(selectedSong)}
                   >
-                    {selectedSong.visibility === 'PUBLIC' ? 'Copy share link' : 'Make public to share'}
+                    Copy share link
                   </button>
                   <a className={styles.downloadButton} href={`/songs/${selectedSong.song_id}/download/`}>
                     Download song
