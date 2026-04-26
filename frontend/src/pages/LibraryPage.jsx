@@ -98,6 +98,31 @@ export default function LibraryPage({ user, onLogout }) {
     }
   }
 
+  async function handleVisibilityToggle(song, nextVisibility) {
+    setBusySongId(song.song_id)
+    try {
+      const response = await axios.patch(`/songs/${song.song_id}/visibility/`, { visibility: nextVisibility })
+      setSongs(current =>
+        current.map(item =>
+          item.song_id === song.song_id ? { ...item, visibility: response.data.visibility } : item,
+        ),
+      )
+      setToast({
+        type: 'success',
+        title: 'Visibility updated',
+        message: `"${song.title}" is now ${response.data.visibility.toLowerCase()}.`,
+      })
+    } catch (requestError) {
+      setToast({
+        type: 'error',
+        title: 'Update failed',
+        message: requestError.response?.data?.error ?? requestError.message,
+      })
+    } finally {
+      setBusySongId(null)
+    }
+  }
+
   async function handleCopyShareLink(song) {
     if (song.visibility !== 'PUBLIC') {
       setToast({
@@ -232,6 +257,22 @@ export default function LibraryPage({ user, onLogout }) {
                 </div>
 
                 <div className={styles.actionRow}>
+                  <button
+                    type="button"
+                    className={`${styles.visibilityToggle} ${styles.privateToggle} ${selectedSong.visibility === 'PRIVATE' ? styles.visibilityActive : ''}`}
+                    disabled={busySongId === selectedSong.song_id || selectedSong.visibility === 'PRIVATE'}
+                    onClick={() => handleVisibilityToggle(selectedSong, 'PRIVATE')}
+                  >
+                    {busySongId === selectedSong.song_id ? 'Updating…' : 'Private'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.visibilityToggle} ${styles.publicToggle} ${selectedSong.visibility === 'PUBLIC' ? styles.visibilityActive : ''}`}
+                    disabled={busySongId === selectedSong.song_id || selectedSong.visibility === 'PUBLIC'}
+                    onClick={() => handleVisibilityToggle(selectedSong, 'PUBLIC')}
+                  >
+                    {busySongId === selectedSong.song_id ? 'Updating…' : 'Public'}
+                  </button>
                   <button
                     type="button"
                     className={styles.shareButton}

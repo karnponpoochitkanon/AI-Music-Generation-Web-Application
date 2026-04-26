@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import AudioPlayer from '../components/AudioPlayer'
 import styles from './ShareSongPage.module.css'
@@ -87,9 +87,6 @@ export default function ShareSongPage() {
               <a className={styles.primaryAction} href={`/songs/${song.id}/download/`}>
                 Download song
               </a>
-              <Link className={styles.secondaryAction} to="/login">
-                Open full studio
-              </Link>
             </div>
           </div>
         ) : null}
